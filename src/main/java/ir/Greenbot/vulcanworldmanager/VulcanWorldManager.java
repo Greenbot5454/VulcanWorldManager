@@ -8,6 +8,8 @@ public class VulcanWorldManager extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
         getCommand("worlds").setExecutor((sender, command, label, args) -> {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("Only players can use this command!");
@@ -15,7 +17,7 @@ public class VulcanWorldManager extends JavaPlugin {
             }
             
             if (!player.hasPermission("vulcanworldmanager.admin")) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou don't have permission to use this command!"));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou don't have permission!"));
                 return true;
             }
             
@@ -23,13 +25,12 @@ public class VulcanWorldManager extends JavaPlugin {
             return true;
         });
 
-        getServer().getPluginManager().registerEvents(new GUIListener(), this);
-        
-        getLogger().info("VulcanWorldManager has been enabled successfully!");
+        getServer().getPluginManager().registerEvents(new GUIListener(this), this);
+        getLogger().info("VulcanWorldManager enabled successfully!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("VulcanWorldManager has been disabled.");
+        getLogger().info("VulcanWorldManager disabled.");
     }
 }
