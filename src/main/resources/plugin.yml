@@ -1,0 +1,22 @@
+name: VulcanWorldManager
+version: 1.0.0
+main: ir.Greenbot.vulcanworldmanager.VulcanWorldManager
+api-version: '26.1.2'
+author: Greenbot5454
+description: Manage worlds with a GUI
+
+commands:
+  worlds:
+    description: Open the world management GUI
+    usage: /vulcanworldmanager
+    permission: vulcanworldmanager.admin
+commands:
+  worlds:
+    description: Open the world management GUI
+    usage: /vwm
+    permission: vulcanworldmanager.admin
+
+permissions:
+  vulcanworldmanager.admin:
+    description: Access to world management
+    default: op
