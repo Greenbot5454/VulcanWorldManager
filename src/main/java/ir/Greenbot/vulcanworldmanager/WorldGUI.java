@@ -10,80 +10,91 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class WorldGUI {
 
     public static void openMainMenu(Player player) {
-        List<World> worlds = Bukkit.getWorlds();
-        int size = ((worlds.size() - 1) / 9 + 1) * 9; 
-        if (size < 9) size = 9; 
-        
-        // استفاده از & در عنوان و تبدیل آن به رنگ
-        String title = ChatColor.translateAlternateColorCodes('&', "&2&lWorld Manager");
-        Inventory inv = Bukkit.createInventory(null, size, title);
+        String title = ChatColor.translateAlternateColorCodes('&', "&8&lᴡᴏʀʟᴅ ᴍᴀɴᴀɢᴇʀ");
+        Inventory inv = Bukkit.createInventory(null, 54, title); // 6 rows
 
-        for (int i = 0; i < worlds.size(); i++) {
-            World world = worlds.get(i);
-            ItemStack item = new ItemStack(Material.GRASS_BLOCK);
-            ItemMeta meta = item.getItemMeta();
-            
-            if (meta != null) {
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&a" + world.getName()));
-                List<String> lore = new ArrayList<>();
-                lore.add(ChatColor.translateAlternateColorCodes('&', "&7Players: &f" + world.getPlayers().size()));
-                lore.add(ChatColor.translateAlternateColorCodes('&', "&7Environment: &f" + world.getEnvironment().name()));
-                lore.add("");
-                lore.add(ChatColor.translateAlternateColorCodes('&', "&eClick to manage"));
-                meta.setLore(lore);
-                item.setItemMeta(meta);
-            }
-            inv.setItem(i, item);
+        // Fill empty slots with glass panes
+        ItemStack glass = createItem(Material.GRAY_STAINED_GLASS_PANE, " ", null);
+        for (int i = 0; i < 54; i++) {
+            inv.setItem(i, glass);
         }
+
+        // Add Create World Button (Slot 4)
+        ItemStack createBtn = createItem(Material.GRASS_BLOCK,
+                "&a&lᴄʀᴇᴀᴛᴇ ɴᴇᴡ ᴡᴏʀʟᴅ",
+                Arrays.asList("&7Click here to create", "&7a new empty world."));
+        inv.setItem(4, createBtn);
+
+        // List Worlds
+        List<World> worlds = Bukkit.getWorlds();
+        int slot = 19; // Start from row 3
+
+        for (World world : worlds) {
+            if (slot > 43) break; // Max slots before border
+
+            Material mat = world.getEnvironment() == World.Environment.NETHER ? Material.NETHERRACK :
+                           world.getEnvironment() == World.Environment.THE_END ? Material.END_STONE : Material.GRASS_BLOCK;
+
+            ItemStack worldItem = createItem(mat,
+                    "&e&l" + world.getName(),
+                    Arrays.asList(
+                            "&7Players: &f" + world.getPlayers().size(),
+                            "&7Environment: &f" + world.getEnvironment().name(),
+                            "",
+                            "&aLeft-Click &7to manage",
+                            "&cRight-Click &7to unload"
+                    ));
+            inv.setItem(slot, worldItem);
+            slot++;
+        }
+
         player.openInventory(inv);
     }
 
     public static void openWorldMenu(Player player, String worldName) {
-        String title = ChatColor.translateAlternateColorCodes('&', "&4&lManage: &c" + worldName);
+        String title = ChatColor.translateAlternateColorCodes('&', "&8&lᴍᴀɴᴀɢᴇ: &7" + worldName);
         Inventory inv = Bukkit.createInventory(null, 27, title);
 
-        // Unload Button
-        ItemStack unload = new ItemStack(Material.BARRIER);
-        ItemMeta unloadMeta = unload.getItemMeta();
-        if (unloadMeta != null) {
-            unloadMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&cUnload World"));
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.translateAlternateColorCodes('&', "&7Turns off the world to save RAM."));
-            unloadMeta.setLore(lore);
-            unload.setItemMeta(unloadMeta);
+        ItemStack glass = createItem(Material.GRAY_STAINED_GLASS_PANE, " ", null);
+        for (int i = 0; i < 27; i++) {
+            inv.setItem(i, glass);
         }
-        inv.setItem(11, unload);
 
-        // Teleport Button
-        ItemStack teleport = new ItemStack(Material.ENDER_PEARL);
-        ItemMeta tpMeta = teleport.getItemMeta();
-        if (tpMeta != null) {
-            tpMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&bTeleport to World"));
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.translateAlternateColorCodes('&', "&7Teleports you to this world."));
-            tpMeta.setLore(lore);
-            teleport.setItemMeta(tpMeta);
-        }
-        inv.setItem(13, teleport);
+        // Teleport
+        inv.setItem(11, createItem(Material.ENDER_PEARL, "&b&lᴛᴇʟᴇᴘᴏʀᴛ",
+                Arrays.asList("&7Teleports you to this world.")));
 
-        // Delete Button
-        ItemStack delete = new ItemStack(Material.TNT);
-        ItemMeta delMeta = delete.getItemMeta();
-        if (delMeta != null) {
-            delMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&4&lDelete World"));
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.translateAlternateColorCodes('&', "&c&lDANGER: &7This will permanently"));
-            lore.add(ChatColor.translateAlternateColorCodes('&', "&7delete the world files!"));
-            delMeta.setLore(lore);
-            delete.setItemMeta(delMeta);
-        }
-        inv.setItem(15, delete);
+        // Set Spawn
+        inv.setItem(13, createItem(Material.RED_BED, "&e&lsᴇᴛ sᴘᴀᴡɴ",
+                Arrays.asList("&7Sets the spawn point", "&7to your current location.")));
+
+        // Delete
+        inv.setItem(15, createItem(Material.TNT, "&c&lᴅᴇʟᴇᴛᴇ ᴡᴏʀʟᴅ",
+                Arrays.asList("&c&lDANGER:", "&7Permanently deletes this world.")));
 
         player.openInventory(inv);
+    }
+
+    private static ItemStack createItem(Material material, String name, List<String> lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+            if (lore != null) {
+                List<String> coloredLore = new ArrayList<>();
+                for (String l : lore) {
+                    coloredLore.add(ChatColor.translateAlternateColorCodes('&', l));
+                }
+                meta.setLore(coloredLore);
+            }
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 }
