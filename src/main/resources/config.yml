@@ -1,0 +1,27 @@
+# VulcanWorldManager Configuration
+
+gui:
+  main-title: "&8&lᴡᴏʀʟᴅ ᴍᴀɴᴀɢᴇʀ"
+  world-title: "&8&lᴍᴀɴᴀɢᴇ: &7{world}"
+  
+  create-world:
+    name: "&a&lᴄʀᴇᴀᴛᴇ ɴᴇᴡ ᴡᴏʀʟᴅ"
+    lore:
+      - "&7Click to create a new empty world."
+      - "&7Type the name in chat."
+
+  fill-item: "GRAY_STAINED_GLASS_PANE"
+
+messages:
+  prefix: "&8[&aVulcanWorlds&8] &r"
+  no-permission: "{prefix}&cYou don't have permission!"
+  world-not-found: "{prefix}&cWorld not found!"
+  world-unloaded: "{prefix}&aWorld &e{world} &aunloaded."
+  world-loaded: "{prefix}&aWorld &e{world} &aloaded successfully."
+  world-deleted: "{prefix}&aWorld &e{world} &adeleted permanently."
+  world-created: "{prefix}&aWorld &e{world} &acreated successfully!"
+  players-inside: "{prefix}&cCannot do this while players are inside!"
+  
+  # Chat input prompts
+  enter-world-name: "{prefix}&ePlease type the name of the new world in chat."
+  enter-world-name-cancel: "{prefix}&7Type &ccancel &7to abort."
