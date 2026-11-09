@@ -15,10 +15,12 @@ public class GUIListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
+        
         String title = event.getView().getTitle();
-
-        // --- منوی اصلی ---
-        if (title.equals(ChatColor.DARK_GREEN + "World Manager")) {
+        String mainTitle = ChatColor.translateAlternateColorCodes('&', "&2&lWorld Manager");
+        
+        // --- Main Menu ---
+        if (title.equals(mainTitle)) {
             event.setCancelled(true);
             if (event.getCurrentItem() == null || event.getCurrentItem().getItemMeta() == null) return;
             
@@ -26,50 +28,49 @@ public class GUIListener implements Listener {
             WorldGUI.openWorldMenu(player, worldName);
         }
 
-        // --- منوی مدیریت دنیا ---
-        else if (title.startsWith(ChatColor.DARK_RED + "Manage: ")) {
+        // --- World Management Menu ---
+        else if (ChatColor.stripColor(title).startsWith("Manage: ")) {
             event.setCancelled(true);
             if (event.getCurrentItem() == null) return;
 
-            String worldName = title.replace(ChatColor.DARK_RED + "Manage: ", "");
+            // Extract world name from title
+            String worldName = ChatColor.stripColor(title).replace("Manage: ", "").trim();
             World world = Bukkit.getWorld(worldName);
 
             if (world == null) {
-                player.sendMessage(ChatColor.RED + "World not found!");
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cWorld not found!"));
+                player.closeInventory();
                 return;
             }
 
             switch (event.getCurrentItem().getType()) {
                 case BARRIER:
-                    // خاموش کردن دنیا
                     if (world.getPlayers().size() > 0) {
-                        player.sendMessage(ChatColor.RED + "Cannot unload a world with players inside!");
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCannot unload a world with players inside!"));
                     } else {
                         Bukkit.unloadWorld(world, true);
-                        player.sendMessage(ChatColor.GREEN + "World " + worldName + " unloaded.");
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aWorld &e" + worldName + " &aunloaded successfully."));
                         player.closeInventory();
                     }
                     break;
 
                 case ENDER_PEARL:
-                    // تلپورت به دنیا
                     player.teleport(world.getSpawnLocation());
-                    player.sendMessage(ChatColor.GREEN + "Teleported to " + worldName);
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aTeleported to &e" + worldName));
                     player.closeInventory();
                     break;
 
                 case TNT:
-                    // حذف دنیا
                     if (world.getPlayers().size() > 0) {
-                        player.sendMessage(ChatColor.RED + "Cannot delete a world with players inside!");
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCannot delete a world with players inside!"));
                     } else {
                         Bukkit.unloadWorld(world, false);
                         File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
                         if (worldFolder.exists()) {
                             deleteDirectory(worldFolder);
-                            player.sendMessage(ChatColor.GREEN + "World " + worldName + " deleted.");
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aWorld &e" + worldName + " &awas permanently deleted."));
                         } else {
-                            player.sendMessage(ChatColor.RED + "World folder not found.");
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cWorld folder not found."));
                         }
                         player.closeInventory();
                     }
@@ -80,7 +81,6 @@ public class GUIListener implements Listener {
         }
     }
 
-    // متد کمکی برای حذف پوشه به صورت بازگشتی
     private void deleteDirectory(File file) {
         File[] contents = file.listFiles();
         if (contents != null) {
